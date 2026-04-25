@@ -3,18 +3,18 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, EyeOff, Shield, Check } from "lucide-react";
 import gayatriPortrait from "@/assets/gayatri-portrait.jpg";
-import { signUpWithEmail, signInWithGoogle } from "@/lib/firebase";
+import { signInWithEmail, signInWithGoogle } from "@/lib/firebase";
 
-const Signup = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
 
-  const handleEmailSignup = async (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password) {
+    if (!form.email || !form.password) {
       setError("Please fill all fields");
       return;
     }
@@ -23,25 +23,24 @@ const Signup = () => {
     setError("");
 
     try {
-      await signUpWithEmail(form.email, form.password);
-      navigate("/onboarding", { state: { name: form.name } });
+      await signInWithEmail(form.email, form.password);
+      navigate("/onboarding");
     } catch (err: any) {
-      setError(err.message || "Failed to create account");
+      setError(err.message || "Failed to sign in");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const result = await signInWithGoogle();
-      const name = result.user.displayName || "User";
-      navigate("/onboarding", { state: { name } });
+      await signInWithGoogle();
+      navigate("/onboarding");
     } catch (err: any) {
-      setError(err.message || "Failed to sign up with Google");
+      setError(err.message || "Failed to sign in with Google");
     } finally {
       setLoading(false);
     }
@@ -66,8 +65,8 @@ const Signup = () => {
               </div>
               <span className="text-2xl font-heading font-bold text-gradient-saffron">GayatriAI</span>
             </Link>
-            <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-2">Create your account</h1>
-            <p className="text-sm text-muted-foreground">Start your free Vedic astrology journey today</p>
+            <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-2">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">Sign in to continue your Vedic astrology journey</p>
           </div>
 
           {/* Error display */}
@@ -77,18 +76,7 @@ const Signup = () => {
             </div>
           )}
 
-          <form onSubmit={handleEmailSignup} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1.5">Full Name</label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Enter your name"
-                className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground text-sm border border-border focus:outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
-              />
-            </div>
+          <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground block mb-1.5">Email</label>
               <input
@@ -108,7 +96,7 @@ const Signup = () => {
                   required
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                   className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground text-sm border border-border focus:outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all pr-12"
                 />
                 <button
@@ -126,7 +114,7 @@ const Signup = () => {
               disabled={loading}
               className="w-full gradient-saffron text-primary-foreground font-semibold py-6 text-base hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-saffron/20 disabled:opacity-50"
             >
-              {loading ? "Creating Account..." : "Create Account"}
+              {loading ? "Signing In..." : "Sign In"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </form>
@@ -141,10 +129,10 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Google Signup */}
+          {/* Google Login */}
           <Button
             type="button"
-            onClick={handleGoogleSignup}
+            onClick={handleGoogleLogin}
             disabled={loading}
             className="w-full bg-white border border-border text-foreground font-semibold py-6 text-base hover:bg-gray-50 transition-all flex items-center justify-center gap-3"
           >
@@ -154,7 +142,7 @@ const Signup = () => {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            {loading ? "Signing up..." : "Sign up with Google"}
+            {loading ? "Signing in..." : "Sign in with Google"}
           </Button>
 
           {/* Trust row */}
@@ -174,8 +162,8 @@ const Signup = () => {
           </div>
 
           <p className="text-sm text-muted-foreground text-center mt-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-saffron font-medium hover:underline">Log in</Link>
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-saffron font-medium hover:underline">Sign up</Link>
           </p>
         </div>
       </div>
@@ -183,4 +171,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

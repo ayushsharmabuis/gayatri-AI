@@ -86,14 +86,21 @@ export async function sendChat(
     // Build enhanced system prompt with real planetary data
     const system = chart ? buildSystemPrompt(chart) : buildDefaultPrompt();
     
-    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiKey = import.meta.env.VITE_API_KEY;
+    
+    if (!apiUrl || !apiKey) {
+      throw new Error("API configuration missing. Please check environment variables.");
+    }
+    
+    const response = await fetch(`${apiUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer JszVcY36Psn3O6gTNOek5ZL0tf1Dt99j`,
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "mistral-large-latest",
+        model: import.meta.env.VITE_API_MODEL,
         messages: [
           { role: "system", content: system },
           ...messages
